@@ -1,0 +1,45 @@
+{
+  "name": "server",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:update": "pnpm run up:auth && pnpm run db:generate && pnpm run db:migrate && pnpm run db:push",
+    "up:auth": "pnpx @better-auth/cli generate --config ./src/config/auth.ts  --output ./src/db/schema/auth.ts -y"
+  },
+  "dependencies": {
+    "@better-auth/expo": "^1.2.7",
+    "@better-auth/stripe": "^1.2.7",
+    "@hono/node-server": "^1.14.1",
+    "@hono/zod-openapi": "^0.19.6",
+    "@hono/zod-validator": "^0.5.0",
+    "@neondatabase/serverless": "^1.0.0",
+    "@scalar/hono-api-reference": "^0.8.8",
+    "better-auth": "^1.2.7",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.43.1",
+    "drizzle-zod": "^0.7.1",
+    "hono": "^4.7.8",
+    "hono-openapi": "^0.4.8",
+    "hono-pino": "^0.8.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "resend": "^4.5.1",
+    "stoker": "^1.4.2",
+    "stripe": "17.7.0",
+    "zod": "^3.24.4",
+    "zod-openapi": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
+  }
+}
