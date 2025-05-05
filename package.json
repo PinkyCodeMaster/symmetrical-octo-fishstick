@@ -1,16 +1,21 @@
 {
-  "name": "turborepo-empty-starter",
-  "version": "1.0.0",
+  "name": "kitchen-sink",
   "private": true,
-  "description": "An empty Turborepo starter",
-  "main": "index.js",
   "scripts": {
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "dev": "turbo dev"
+    "build": "turbo run build",
+    "clean": "turbo run clean",
+    "dev": "turbo run dev",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "check-types": "turbo run check-types"
   },
-  "keywords": [],
-  "author": "tknickman",
-  "license": "ISC",
-  "packageManager": "pnpm@7.30.5"
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.2"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=18"
+  }
 }
