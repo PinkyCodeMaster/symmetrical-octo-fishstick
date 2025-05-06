@@ -4,7 +4,20 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "NODE_ENV",
+        "PORT",
+        "DATABASE_URL",
+        "RESEND_API_KEY",
+        "RESEND_FROM_EMAIL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "LOG_LEVEL",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET"
+      ],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
