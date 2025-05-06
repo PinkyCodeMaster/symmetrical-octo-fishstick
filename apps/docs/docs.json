@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Athena",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -11,92 +11,78 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Getting Started",
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "architecture"
             ]
           },
           {
-            "group": "Essentials",
+            "group": "Features",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "features/authentication",
+              "features/tasks",
+              "features/notifications"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "server",
+        "groups": [
+
+          {
+            "group": "Server Setup",
+            "pages": [
+              "backend/setup",
+              "backend/deployment",
+              "backend/environment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Frontend",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Web App",
             "pages": [
-              "api-reference/introduction"
+              "frontend/web/setup",
+              "frontend/web/components",
+              "frontend/web/state-management"
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Admin Dashboard",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "frontend/admin/setup",
+              "frontend/admin/features",
+              "frontend/admin/deployment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Mobile",
+        "groups": [
+          {
+            "group": "Native Apps",
+            "pages": [
+              "mobile/setup",
+              "mobile/features",
+              "mobile/deployment"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
   }
 }

@@ -1,0 +1,206 @@
+---
+title: 'Backend Environment'
+description: 'Backend environment configuration'
+---
+
+# Backend Environment Configuration
+
+This guide covers the environment configuration for the backend server.
+
+## Environment Variables
+
+### Required Variables
+
+```env
+# Server Configuration
+PORT=9000
+NODE_ENV=development
+HOST=localhost
+
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+DATABASE_SSL=false
+
+# Redis
+REDIS_URL=redis://localhost:6379
+REDIS_PASSWORD=
+
+# Authentication
+JWT_SECRET=your-secret
+JWT_EXPIRES_IN=1d
+AUTH_PROVIDER=local
+
+# CORS
+CORS_ORIGIN=http://localhost:3000
+CORS_METHODS=GET,POST,PUT,DELETE
+CORS_CREDENTIALS=true
+
+# Logging
+LOG_LEVEL=info
+LOG_FORMAT=json
+```
+
+### Optional Variables
+
+```env
+# Rate Limiting
+RATE_LIMIT_WINDOW=15m
+RATE_LIMIT_MAX=100
+
+# Cache
+CACHE_TTL=3600
+CACHE_PREFIX=app
+
+# Email
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=user
+SMTP_PASS=pass
+
+# Storage
+STORAGE_PROVIDER=local
+STORAGE_PATH=./uploads
+```
+
+## Development Environment
+
+### Local Setup
+
+1. Create `.env` file:
+```bash
+cp .env.example .env
+```
+
+2. Update variables:
+```bash
+# Edit .env with your local settings
+nano .env
+```
+
+3. Start development server:
+```bash
+pnpm dev
+```
+
+### Docker Setup
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://user:pass@db:5432/db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=db
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+```
+
+## Production Environment
+
+### Environment Setup
+
+1. Create production `.env`:
+```bash
+cp .env.example .env.production
+```
+
+2. Update production variables:
+```env
+NODE_ENV=production
+PORT=9000
+HOST=0.0.0.0
+
+# Use production database
+DATABASE_URL=postgresql://prod_user:prod_pass@prod_db:5432/prod_db
+DATABASE_SSL=true
+
+# Use production Redis
+REDIS_URL=redis://prod_redis:6379
+REDIS_PASSWORD=prod_redis_pass
+
+# Production secrets
+JWT_SECRET=your_production_secret
+JWT_EXPIRES_IN=1d
+
+# Production CORS
+CORS_ORIGIN=https://example.com
+```
+
+### Security Considerations
+
+1. Secrets Management
+   - Use environment variables
+   - Never commit secrets
+   - Rotate secrets regularly
+   - Use secret management service
+
+2. SSL/TLS
+   - Enable SSL in production
+   - Use valid certificates
+   - Configure secure headers
+   - Enable HSTS
+
+3. Database Security
+   - Use strong passwords
+   - Enable SSL connections
+   - Restrict network access
+   - Regular backups
+
+4. Redis Security
+   - Use strong passwords
+   - Enable SSL
+   - Restrict network access
+   - Regular backups
+
+## Environment Validation
+
+```typescript
+// utils/validateEnv.ts
+import { cleanEnv, str, port, bool } from 'envalid';
+
+export function validateEnv() {
+  cleanEnv(process.env, {
+    NODE_ENV: str({ choices: ['development', 'production'] }),
+    PORT: port(),
+    DATABASE_URL: str(),
+    REDIS_URL: str(),
+    JWT_SECRET: str(),
+    CORS_ORIGIN: str(),
+    DATABASE_SSL: bool({ default: false })
+  });
+}
+```
+
+## Best Practices
+
+1. Use environment variables
+2. Validate environment
+3. Use different configs
+4. Secure sensitive data
+5. Document variables
+6. Regular audits
+7. Version control
+
+<Note>
+  For deployment instructions, check the [Deployment](/backend/deployment) guide.
+</Note> 

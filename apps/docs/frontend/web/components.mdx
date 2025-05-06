@@ -1,0 +1,207 @@
+---
+title: 'Web Components'
+description: 'Component library and usage guide'
+---
+
+# Web Components
+
+The Tasks Application uses a comprehensive component library built with React and Tailwind CSS.
+
+## Core Components
+
+### 1. Layout Components
+
+```typescript
+// Layout components
+import { Layout, Sidebar, Header, Footer } from '@/components/layout';
+
+export default function AppLayout({ children }) {
+  return (
+    <Layout>
+      <Sidebar />
+      <div className="flex-1">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </Layout>
+  );
+}
+```
+
+### 2. Form Components
+
+```typescript
+// Form components
+import { Form, Input, Select, Checkbox } from '@/components/form';
+
+export function TaskForm() {
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Input
+        name="title"
+        label="Task Title"
+        required
+        placeholder="Enter task title"
+      />
+      <Select
+        name="priority"
+        label="Priority"
+        options={[
+          { value: 'high', label: 'High' },
+          { value: 'medium', label: 'Medium' },
+          { value: 'low', label: 'Low' }
+        ]}
+      />
+      <Checkbox name="urgent" label="Mark as urgent" />
+    </Form>
+  );
+}
+```
+
+### 3. Task Components
+
+```typescript
+// Task-specific components
+import { TaskCard, TaskList, TaskFilter } from '@/components/tasks';
+
+export function TaskBoard() {
+  return (
+    <div>
+      <TaskFilter />
+      <TaskList>
+        {tasks.map(task => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </TaskList>
+    </div>
+  );
+}
+```
+
+## Component Architecture
+
+### 1. Component Structure
+
+```
+components/
+├── layout/           # Layout components
+├── form/            # Form components
+├── tasks/           # Task-specific components
+├── common/          # Shared components
+└── ui/              # UI primitives
+```
+
+### 2. Component Props
+
+```typescript
+// Example component props
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger';
+  size: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  loading?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}
+```
+
+### 3. Styling
+
+```typescript
+// Using Tailwind CSS
+const Button = ({ variant, size, ...props }: ButtonProps) => {
+  const baseStyles = 'rounded font-medium transition-colors';
+  const variantStyles = {
+    primary: 'bg-blue-500 hover:bg-blue-600 text-white',
+    secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
+    danger: 'bg-red-500 hover:bg-red-600 text-white'
+  };
+  const sizeStyles = {
+    sm: 'px-3 py-1 text-sm',
+    md: 'px-4 py-2',
+    lg: 'px-6 py-3 text-lg'
+  };
+
+  return (
+    <button
+      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]}`}
+      {...props}
+    />
+  );
+};
+```
+
+## Best Practices
+
+### 1. Component Design
+
+- Keep components small and focused
+- Use TypeScript for type safety
+- Implement proper prop validation
+- Follow accessibility guidelines
+- Use composition over inheritance
+
+### 2. Performance
+
+```typescript
+// Memoize expensive components
+const MemoizedTaskCard = React.memo(TaskCard);
+
+// Use callbacks for event handlers
+const handleClick = useCallback(() => {
+  // Handle click
+}, [/* dependencies */]);
+```
+
+### 3. Testing
+
+```typescript
+// Component test example
+describe('TaskCard', () => {
+  it('renders task information correctly', () => {
+    const task = {
+      id: '1',
+      title: 'Test Task',
+      status: 'todo'
+    };
+    
+    render(<TaskCard task={task} />);
+    expect(screen.getByText('Test Task')).toBeInTheDocument();
+  });
+});
+```
+
+## Component Library
+
+### 1. UI Components
+
+- `Button`: Action buttons
+- `Card`: Content containers
+- `Input`: Form inputs
+- `Select`: Dropdown selects
+- `Modal`: Dialog windows
+- `Toast`: Notifications
+- `Table`: Data tables
+
+### 2. Layout Components
+
+- `Layout`: Page layout
+- `Sidebar`: Navigation sidebar
+- `Header`: Page header
+- `Footer`: Page footer
+- `Grid`: Grid system
+- `Container`: Content container
+
+### 3. Task Components
+
+- `TaskCard`: Task display
+- `TaskList`: Task collection
+- `TaskForm`: Task creation/editing
+- `TaskFilter`: Task filtering
+- `TaskStatus`: Status indicator
+- `TaskPriority`: Priority indicator
+
+<Note>
+  For state management patterns, check the [State Management](/frontend/web/state-management) guide.
+</Note> 

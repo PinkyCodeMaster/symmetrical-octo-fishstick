@@ -1,0 +1,201 @@
+---
+title: 'Mobile App Setup'
+description: 'Setting up the mobile application'
+---
+
+# Mobile App Setup
+
+The mobile app is built with React Native and provides a native experience for task management.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- React Native CLI
+- Android Studio / Xcode
+- Git
+
+## Setup Steps
+
+### 1. Install Dependencies
+
+```bash
+# Navigate to mobile directory
+cd apps/mobile
+
+# Install dependencies
+pnpm install
+```
+
+### 2. Environment Configuration
+
+Create `.env` in `apps/mobile`:
+
+```bash
+# API Configuration
+API_URL=http://localhost:9000
+WS_URL=ws://localhost:9000
+
+# Authentication
+AUTH_ENABLED=true
+AUTH_PROVIDER=local
+
+# Mobile Features
+ENABLE_PUSH_NOTIFICATIONS=true
+ENABLE_OFFLINE_MODE=true
+ENABLE_BIOMETRICS=true
+```
+
+### 3. Development Server
+
+```bash
+# Start Metro bundler
+pnpm start
+
+# Run on Android
+pnpm android
+
+# Run on iOS
+pnpm ios
+```
+
+## Project Structure
+
+```
+apps/mobile/
+├── src/
+│   ├── components/     # React Native components
+│   ├── screens/        # App screens
+│   ├── navigation/     # Navigation setup
+│   ├── hooks/         # Custom hooks
+│   ├── store/         # State management
+│   ├── styles/        # Global styles
+│   ├── types/         # TypeScript types
+│   └── utils/         # Utility functions
+├── android/           # Android specific files
+├── ios/              # iOS specific files
+└── tests/            # Test files
+```
+
+## Key Features
+
+### 1. Navigation Setup
+
+```typescript
+// navigation/AppNavigator.tsx
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
+export function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Tasks" component={TasksScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+```
+
+### 2. Authentication
+
+```typescript
+// hooks/useAuth.ts
+import { useAuth0 } from 'react-native-auth0';
+
+export function useAuth() {
+  const { authorize, clearSession, user } = useAuth0();
+
+  const login = async () => {
+    try {
+      await authorize();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await clearSession();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return { login, logout, user };
+}
+```
+
+### 3. API Integration
+
+```typescript
+// utils/api.ts
+import { api } from '@/lib/api';
+
+export const mobileApi = {
+  getTasks: () => api.get('/tasks'),
+  createTask: (data) => api.post('/tasks', data),
+  updateTask: (id, data) => api.put(`/tasks/${id}`, data),
+  deleteTask: (id) => api.delete(`/tasks/${id}`)
+};
+```
+
+## Development Workflow
+
+1. Create feature branch
+2. Implement changes
+3. Write tests
+4. Run linter
+5. Create PR
+
+## Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run e2e tests
+pnpm test:e2e
+```
+
+## Building for Production
+
+```bash
+# Build Android
+pnpm build:android
+
+# Build iOS
+pnpm build:ios
+
+# Analyze bundle size
+pnpm analyze
+```
+
+## Performance Optimization
+
+1. Code splitting
+2. Image optimization
+3. Caching strategies
+4. Bundle analysis
+5. Lazy loading
+
+## Best Practices
+
+1. Follow component patterns
+2. Write unit tests
+3. Use TypeScript
+4. Implement error boundaries
+5. Follow accessibility guidelines
+6. Optimize performance
+7. Document components
+
+<Note>
+  For more details on mobile features, check the [Features](/mobile/features) guide.
+</Note> 

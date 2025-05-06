@@ -1,0 +1,220 @@
+---
+title: 'State Management'
+description: 'State management patterns and practices'
+---
+
+# State Management
+
+The Tasks Application uses Zustand for state management, providing a simple and efficient way to handle application state.
+
+## Store Setup
+
+### 1. Task Store
+
+```typescript
+// store/tasks.ts
+import create from 'zustand';
+
+interface TaskState {
+  tasks: Task[];
+  loading: boolean;
+  error: string | null;
+  fetchTasks: () => Promise<void>;
+  createTask: (task: TaskInput) => Promise<void>;
+  updateTask: (id: string, task: Partial<Task>) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
+}
+
+export const useTaskStore = create<TaskState>((set, get) => ({
+  tasks: [],
+  loading: false,
+  error: null,
+  
+  fetchTasks: async () => {
+    set({ loading: true });
+    try {
+      const response = await api.get('/tasks');
+      set({ tasks: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  },
+  
+  createTask: async (task) => {
+    set({ loading: true });
+    try {
+      const response = await api.post('/tasks', task);
+      set(state => ({
+        tasks: [...state.tasks, response.data],
+        loading: false
+      }));
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  }
+}));
+```
+
+### 2. Auth Store
+
+```typescript
+// store/auth.ts
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  login: (credentials: LoginInput) => Promise<void>;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  token: null,
+  
+  login: async (credentials) => {
+    const response = await api.post('/auth/login', credentials);
+    set({
+      user: response.data.user,
+      token: response.data.token
+    });
+  },
+  
+  logout: () => {
+    set({ user: null, token: null });
+  }
+}));
+```
+
+## Usage in Components
+
+### 1. Task Management
+
+```typescript
+// components/TaskList.tsx
+export function TaskList() {
+  const { tasks, loading, error, fetchTasks } = useTaskStore();
+  
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+  
+  if (loading) return <Spinner />;
+  if (error) return <ErrorMessage message={error} />;
+  
+  return (
+    <div>
+      {tasks.map(task => (
+        <TaskCard key={task.id} task={task} />
+      ))}
+    </div>
+  );
+}
+```
+
+### 2. Form Handling
+
+```typescript
+// components/TaskForm.tsx
+export function TaskForm() {
+  const createTask = useTaskStore(state => state.createTask);
+  
+  const handleSubmit = async (data: TaskInput) => {
+    await createTask(data);
+  };
+  
+  return (
+    <Form onSubmit={handleSubmit}>
+      {/* form fields */}
+    </Form>
+  );
+}
+```
+
+## State Patterns
+
+### 1. Selectors
+
+```typescript
+// Using selectors for derived state
+const useTaskSelectors = {
+  getTaskById: (id: string) => 
+    useTaskStore(state => state.tasks.find(t => t.id === id)),
+    
+  getTasksByStatus: (status: TaskStatus) =>
+    useTaskStore(state => state.tasks.filter(t => t.status === status)),
+    
+  getTasksByAssignee: (assigneeId: string) =>
+    useTaskStore(state => state.tasks.filter(t => t.assignee === assigneeId))
+};
+```
+
+### 2. Middleware
+
+```typescript
+// Adding middleware for persistence
+import { persist } from 'zustand/middleware';
+
+export const useTaskStore = create(
+  persist(
+    (set) => ({
+      // store implementation
+    }),
+    {
+      name: 'task-storage',
+      getStorage: () => localStorage
+    }
+  )
+);
+```
+
+### 3. Async Actions
+
+```typescript
+// Handling async actions with loading states
+const useAsyncTask = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  
+  const execute = async (action: () => Promise<void>) => {
+    setLoading(true);
+    try {
+      await action();
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { execute, loading, error };
+};
+```
+
+## Best Practices
+
+1. Keep stores focused and small
+2. Use TypeScript for type safety
+3. Implement proper error handling
+4. Use selectors for derived state
+5. Implement proper loading states
+6. Use middleware for side effects
+7. Keep components pure
+
+## Performance Optimization
+
+```typescript
+// Memoize selectors
+const useTaskCount = useMemo(
+  () => useTaskStore(state => state.tasks.length),
+  []
+);
+
+// Use shallow comparison
+const tasks = useTaskStore(
+  state => state.tasks,
+  shallow
+);
+```
+
+<Note>
+  For component implementation details, check the [Components](/frontend/web/components) guide.
+</Note> 

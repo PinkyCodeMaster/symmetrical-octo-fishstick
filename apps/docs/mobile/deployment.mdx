@@ -1,0 +1,236 @@
+---
+title: 'Mobile Deployment'
+description: 'Deploying the mobile application'
+---
+
+# Mobile App Deployment
+
+This guide covers the deployment process for the mobile app to both Android and iOS platforms.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- Android Studio / Xcode
+- App Store Connect access
+- Google Play Console access
+- CI/CD access
+- Environment variables
+
+## Build Process
+
+### Android
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build Android release
+cd android
+./gradlew assembleRelease
+
+# Generate signed APK
+./gradlew bundleRelease
+```
+
+### iOS
+
+```bash
+# Install dependencies
+pnpm install
+
+# Install pods
+cd ios
+pod install
+
+# Build iOS release
+xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -configuration Release
+```
+
+## Deployment Options
+
+### 1. Android Play Store
+
+```gradle
+// android/app/build.gradle
+android {
+    signingConfigs {
+        release {
+            storeFile file("your-key.keystore")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+    
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+```
+
+### 2. iOS App Store
+
+```ruby
+# ios/Podfile
+platform :ios, '13.0'
+
+target 'YourApp' do
+  use_frameworks!
+  
+  # Pods
+  pod 'React', :path => '../node_modules/react-native'
+  pod 'React-Core', :path => '../node_modules/react-native'
+  # ... other pods
+end
+```
+
+### 3. CI/CD Pipeline
+
+```yaml
+# .github/workflows/mobile-deploy.yml
+name: Deploy Mobile App
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: pnpm install
+      - run: cd android && ./gradlew assembleRelease
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: com.yourapp
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: production
+
+  deploy-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: pnpm install
+      - run: cd ios && pod install
+      - uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.P12_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+      - uses: apple-actions/upload-app-store-build@v1
+        with:
+          app-path: ios/build/YourApp.ipa
+          api-key: ${{ secrets.APPSTORE_API_KEY }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+```
+
+## Environment Configuration
+
+```env
+# .env.production
+API_URL=https://api.example.com
+WS_URL=wss://api.example.com
+AUTH_ENABLED=true
+AUTH_PROVIDER=local
+ENABLE_PUSH_NOTIFICATIONS=true
+ENABLE_OFFLINE_MODE=true
+ENABLE_BIOMETRICS=true
+```
+
+## Deployment Checklist
+
+1. Environment Variables
+   - API endpoints
+   - Authentication settings
+   - Feature flags
+   - Analytics keys
+
+2. Security
+   - Code signing
+   - SSL pinning
+   - ProGuard rules
+   - App signing
+
+3. Performance
+   - Bundle optimization
+   - Asset compression
+   - Cache configuration
+   - Network optimization
+
+4. Monitoring
+   - Crash reporting
+   - Analytics
+   - Performance monitoring
+   - User feedback
+
+## Post-Deployment
+
+1. Verify deployment
+   - Test on multiple devices
+   - Check all features
+   - Verify API connections
+   - Test offline mode
+
+2. Monitor
+   - Crash reports
+   - Performance metrics
+   - User analytics
+   - App store reviews
+
+3. Updates
+   - Version management
+   - Update strategy
+   - Rollback plan
+   - Beta testing
+
+## Rollback Procedure
+
+### Android
+
+```bash
+# Revert to previous version
+git checkout <previous-version>
+cd android
+./gradlew assembleRelease
+# Upload to Play Store
+```
+
+### iOS
+
+```bash
+# Revert to previous version
+git checkout <previous-version>
+cd ios
+pod install
+xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -configuration Release
+# Upload to App Store
+```
+
+## Best Practices
+
+1. Use semantic versioning
+2. Implement staged rollouts
+3. Set up monitoring alerts
+4. Maintain deployment logs
+5. Regular security updates
+6. Performance optimization
+7. Documentation updates
+
+<Note>
+  For more details about mobile features, check the [Features](/mobile/features) guide.
+</Note> 

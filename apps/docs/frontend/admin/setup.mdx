@@ -1,0 +1,182 @@
+---
+title: 'Admin Dashboard Setup'
+description: 'Setting up the admin dashboard'
+---
+
+# Admin Dashboard Setup
+
+The admin dashboard is built with Next.js and provides comprehensive management capabilities.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- Git
+
+## Setup Steps
+
+### 1. Install Dependencies
+
+```bash
+# Navigate to admin directory
+cd apps/admin
+
+# Install dependencies
+pnpm install
+```
+
+### 2. Environment Configuration
+
+Create `.env.local` in `apps/admin`:
+
+```bash
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:9000
+NEXT_PUBLIC_WS_URL=ws://localhost:9000
+
+# Authentication
+NEXT_PUBLIC_AUTH_ENABLED=true
+NEXT_PUBLIC_AUTH_PROVIDER=local
+
+# Admin Features
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+NEXT_PUBLIC_ENABLE_AUDIT_LOGS=true
+NEXT_PUBLIC_ENABLE_USER_MANAGEMENT=true
+```
+
+### 3. Development Server
+
+```bash
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+```
+
+## Project Structure
+
+```
+apps/admin/
+├── src/
+│   ├── components/     # Admin components
+│   ├── pages/         # Next.js pages
+│   ├── hooks/         # Custom hooks
+│   ├── store/         # State management
+│   ├── styles/        # Global styles
+│   ├── types/         # TypeScript types
+│   └── utils/         # Utility functions
+├── public/            # Static assets
+└── tests/            # Test files
+```
+
+## Key Features
+
+### 1. Dashboard Layout
+
+```typescript
+// components/layout/AdminLayout.tsx
+import { Sidebar, Header, Footer } from '@/components/layout';
+
+export default function AdminLayout({ children }) {
+  return (
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 p-6">{children}</main>
+        <Footer />
+      </div>
+    </div>
+  );
+}
+```
+
+### 2. Authentication
+
+```typescript
+// middleware.ts
+import { withAuth } from 'next-auth/middleware';
+
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => token?.role === 'admin'
+  }
+});
+
+export const config = {
+  matcher: ['/admin/:path*']
+};
+```
+
+### 3. API Integration
+
+```typescript
+// utils/api.ts
+import { api } from '@/lib/api';
+
+export const adminApi = {
+  getUsers: () => api.get('/admin/users'),
+  getAnalytics: () => api.get('/admin/analytics'),
+  getAuditLogs: () => api.get('/admin/audit-logs')
+};
+```
+
+## Development Workflow
+
+1. Create feature branch
+2. Implement changes
+3. Write tests
+4. Run linter
+5. Create PR
+
+## Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run e2e tests
+pnpm test:e2e
+```
+
+## Building for Production
+
+```bash
+# Build the application
+pnpm build
+
+# Analyze bundle size
+pnpm analyze
+
+# Start production server
+pnpm start
+```
+
+## Performance Optimization
+
+1. Code splitting
+2. Image optimization
+3. Caching strategies
+4. Bundle analysis
+5. Lazy loading
+
+## Best Practices
+
+1. Follow component patterns
+2. Write unit tests
+3. Use TypeScript
+4. Implement error boundaries
+5. Follow accessibility guidelines
+6. Optimize performance
+7. Document components
+
+<Note>
+  For more details on admin features, check the [Features](/frontend/admin/features) guide.
+</Note> 

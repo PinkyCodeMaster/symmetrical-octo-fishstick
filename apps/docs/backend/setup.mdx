@@ -1,0 +1,151 @@
+---
+title: 'Backend Setup'
+description: 'Setting up the backend services'
+---
+
+# Backend Setup Guide
+
+This guide covers setting up the backend services for the Tasks Application.
+
+## Prerequisites
+
+- Node.js 18+
+- PostgreSQL 14+
+- Redis 6+
+- Docker (optional)
+
+## Local Development Setup
+
+### 1. Database Setup
+
+```bash
+# Using Docker
+docker run --name tasks-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:14
+docker run --name tasks-redis -p 6379:6379 -d redis:6
+```
+
+### 2. Environment Configuration
+
+Create `.env` in `apps/server`:
+
+```bash
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/tasks"
+
+# Redis
+REDIS_URL="redis://localhost:6379"
+
+# Authentication
+JWT_SECRET="your-secret-key"
+JWT_EXPIRES_IN="7d"
+
+# Server
+PORT=9000
+NODE_ENV="development"
+```
+
+### 3. Database Migrations
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run migrations
+pnpm db:migrate
+
+# Seed database (optional)
+pnpm db:seed
+```
+
+### 4. Start the Server
+
+```bash
+# Development mode
+pnpm dev:server
+
+# Production mode
+pnpm build:server
+pnpm start:server
+```
+
+## API Documentation
+
+The API documentation is available at:
+- Swagger UI: http://localhost:9000/doc
+- OpenAPI JSON: http://localhost:9000/doc/json
+
+## Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run specific test suite
+pnpm test:unit
+pnpm test:integration
+pnpm test:e2e
+```
+
+## Deployment
+
+### Docker Deployment
+
+```bash
+# Build the image
+docker build -t tasks-server .
+
+# Run the container
+docker run -p 9000:9000 tasks-server
+```
+
+### Environment Variables for Production
+
+```bash
+# Required
+DATABASE_URL=
+REDIS_URL=
+JWT_SECRET=
+
+# Optional
+PORT=9000
+NODE_ENV=production
+LOG_LEVEL=info
+```
+
+## Monitoring
+
+- Application logs are available in `logs/`
+- Metrics are exposed at `/metrics` endpoint
+- Health check at `/health` endpoint
+
+## Troubleshooting
+
+### Common Issues
+
+1. Database Connection
+   ```bash
+   # Check PostgreSQL status
+   docker ps | grep postgres
+   
+   # Check connection
+   psql -h localhost -U postgres
+   ```
+
+2. Redis Connection
+   ```bash
+   # Check Redis status
+   docker ps | grep redis
+   
+   # Test connection
+   redis-cli ping
+   ```
+
+3. Port Conflicts
+   ```bash
+   # Check if port 9000 is in use
+   lsof -i :9000
+   ```
+
+<Note>
+  For more detailed information about specific features, check out the [Features](/features) section.
+</Note> 

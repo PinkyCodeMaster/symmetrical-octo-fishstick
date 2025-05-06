@@ -1,0 +1,173 @@
+---
+title: 'Admin Deployment'
+description: 'Deploying the admin dashboard'
+---
+
+# Admin Dashboard Deployment
+
+This guide covers the deployment process for the admin dashboard.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- Docker (optional)
+- CI/CD access
+- Environment variables
+
+## Build Process
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build the application
+pnpm build
+
+# Generate static files
+pnpm generate
+```
+
+## Deployment Options
+
+### 1. Docker Deployment
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN pnpm install
+RUN pnpm build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### 2. Static Hosting
+
+```bash
+# Build for production
+pnpm build
+
+# Deploy to static hosting
+pnpm deploy
+```
+
+### 3. Server Deployment
+
+```bash
+# Build the application
+pnpm build
+
+# Start the server
+pnpm start
+```
+
+## Environment Configuration
+
+```env
+# .env.production
+VITE_API_URL=https://api.example.com
+VITE_ADMIN_API_URL=https://admin-api.example.com
+VITE_AUTH_DOMAIN=admin.example.com
+VITE_AUTH_CLIENT_ID=your-client-id
+VITE_AUTH_AUDIENCE=your-audience
+```
+
+## CI/CD Pipeline
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy Admin Dashboard
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: pnpm install
+      - run: pnpm build
+      - run: pnpm deploy
+```
+
+## Deployment Checklist
+
+1. Environment Variables
+   - API endpoints
+   - Authentication settings
+   - Feature flags
+   - Analytics keys
+
+2. Security
+   - SSL certificates
+   - CORS settings
+   - Security headers
+   - Rate limiting
+
+3. Performance
+   - CDN configuration
+   - Caching strategy
+   - Compression settings
+   - Asset optimization
+
+4. Monitoring
+   - Error tracking
+   - Performance monitoring
+   - User analytics
+   - Server health checks
+
+## Post-Deployment
+
+1. Verify deployment
+   - Check all routes
+   - Test authentication
+   - Verify API connections
+   - Check analytics
+
+2. Monitor
+   - Error rates
+   - Performance metrics
+   - User activity
+   - Server resources
+
+3. Backup
+   - Database backups
+   - Configuration backups
+   - User data backups
+   - System state
+
+## Rollback Procedure
+
+```bash
+# Revert to previous version
+git checkout <previous-version>
+pnpm install
+pnpm build
+pnpm deploy
+```
+
+## Best Practices
+
+1. Use semantic versioning
+2. Implement blue-green deployment
+3. Set up monitoring alerts
+4. Maintain deployment logs
+5. Regular security updates
+6. Performance optimization
+7. Documentation updates
+
+<Note>
+  For more details about admin features, check the [Features](/frontend/admin/features) guide.
+</Note> 

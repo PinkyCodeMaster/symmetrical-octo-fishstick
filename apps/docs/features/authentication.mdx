@@ -1,0 +1,105 @@
+---
+title: 'Authentication'
+description: 'Authentication and authorization features'
+---
+
+# Authentication
+
+The Tasks Application uses JWT-based authentication with role-based access control.
+
+## Authentication Flow
+
+```mermaid
+sequenceDiagram
+    Client->>Server: Login Request
+    Server->>Database: Verify Credentials
+    Database-->>Server: User Data
+    Server->>Server: Generate JWT
+    Server-->>Client: JWT Token
+    Client->>Server: API Request + JWT
+    Server->>Server: Validate JWT
+    Server-->>Client: Response
+```
+
+## Features
+
+### 1. JWT Authentication
+
+- Secure token-based authentication
+- Configurable token expiration
+- Refresh token support
+- Token revocation
+
+### 2. Role-Based Access Control
+
+Available roles:
+- `admin`: Full system access
+- `user`: Standard user access
+- `guest`: Limited access
+
+### 3. Security Features
+
+- Password hashing with bcrypt
+- Rate limiting
+- Session management
+- 2FA support (optional)
+
+## Implementation
+
+### Login
+
+```typescript
+// Example login request
+POST /auth/login
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+
+// Response
+{
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": "123",
+    "email": "user@example.com",
+    "role": "user"
+  }
+}
+```
+
+### Protected Routes
+
+```typescript
+// Example protected request
+GET /api/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+```
+
+## Configuration
+
+```typescript
+// auth.config.ts
+export const authConfig = {
+  jwtSecret: process.env.JWT_SECRET,
+  jwtExpiresIn: '7d',
+  refreshTokenExpiresIn: '30d',
+  rateLimit: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  }
+}
+```
+
+## Security Best Practices
+
+1. Always use HTTPS
+2. Implement rate limiting
+3. Use secure password policies
+4. Regular token rotation
+5. Monitor failed login attempts
+6. Implement account lockout
+7. Log security events
+
+<Note>
+  For implementation details, check the [Backend Setup](/backend/setup) guide.
+</Note> 

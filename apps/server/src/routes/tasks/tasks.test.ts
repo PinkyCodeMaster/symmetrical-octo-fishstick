@@ -1,20 +1,15 @@
-/* eslint-disable ts/ban-ts-comment */
-import { testClient } from "hono/testing";
-import { execSync } from "node:child_process";
-import fs from "node:fs";
-import * as HttpStatusPhrases from "stoker/http-status-phrases";
 import { afterAll, beforeAll, describe, expect, expectTypeOf, it } from "vitest";
-import { ZodIssueCode } from "zod";
-
-import env from "@/env";
-import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/lib/constants";
-import { createTestApp } from "@/lib/create-app";
-
+import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from "@/config/constants";
+import * as HttpStatusPhrases from "stoker/http-status-phrases";
+import { createTestApp } from "@/config/create-app";
+import { execSync } from "node:child_process";
+import { testClient } from "hono/testing";
 import router from "./tasks.index";
+import { ZodIssueCode } from "zod";
+import env from "@/config/env";
+import fs from "node:fs";
 
-if (env.NODE_ENV !== "test") {
-  throw new Error("NODE_ENV must be 'test'");
-}
+if (env.NODE_ENV !== "test") { throw new Error("NODE_ENV must be 'test'"); }
 
 const client = testClient(createTestApp(router));
 
@@ -29,8 +24,8 @@ describe("tasks routes", () => {
 
   it("post /tasks validates the body when creating", async () => {
     const response = await client.tasks.$post({
-      // @ts-expect-error
       json: {
+        name: "",
         done: false,
       },
     });

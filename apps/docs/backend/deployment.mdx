@@ -1,0 +1,168 @@
+---
+title: 'Backend Deployment'
+description: 'Deploying the backend server'
+---
+
+# Backend Deployment
+
+This guide covers the deployment process for the backend server.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- Docker (optional)
+- CI/CD access
+- Environment variables
+
+## Build Process
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build the application
+pnpm build
+
+# Generate OpenAPI docs
+pnpm generate:docs
+```
+
+## Deployment Options
+
+### 1. Docker Deployment
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN pnpm install
+RUN pnpm build
+
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/pnpm-lock.yaml .
+RUN pnpm install --prod
+EXPOSE 9000
+CMD ["node", "dist/main"]
+```
+
+### 2. Server Deployment
+
+```bash
+# Build the application
+pnpm build
+
+# Start the server
+pnpm start
+```
+
+### 3. CI/CD Pipeline
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: pnpm install
+      - run: pnpm build
+      - run: pnpm deploy
+```
+
+## Environment Configuration
+
+```env
+# .env.production
+PORT=9000
+NODE_ENV=production
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=your-secret
+CORS_ORIGIN=https://example.com
+```
+
+## Deployment Checklist
+
+1. Environment Variables
+   - Database connection
+   - Redis connection
+   - JWT secrets
+   - CORS settings
+   - API keys
+
+2. Security
+   - SSL certificates
+   - CORS configuration
+   - Rate limiting
+   - Security headers
+
+3. Performance
+   - Load balancing
+   - Caching strategy
+   - Database optimization
+   - Memory management
+
+4. Monitoring
+   - Error tracking
+   - Performance monitoring
+   - Health checks
+   - Logging
+
+## Post-Deployment
+
+1. Verify deployment
+   - Check API endpoints
+   - Test authentication
+   - Verify database connection
+   - Check OpenAPI docs
+
+2. Monitor
+   - Error rates
+   - Performance metrics
+   - Database health
+   - Server resources
+
+3. Backup
+   - Database backups
+   - Configuration backups
+   - Log backups
+   - System state
+
+## Rollback Procedure
+
+```bash
+# Revert to previous version
+git checkout <previous-version>
+pnpm install
+pnpm build
+pnpm deploy
+```
+
+## Best Practices
+
+1. Use semantic versioning
+2. Implement blue-green deployment
+3. Set up monitoring alerts
+4. Maintain deployment logs
+5. Regular security updates
+6. Performance optimization
+7. Documentation updates
+
+<Note>
+  For more details about environment configuration, check the [Environment](/backend/environment) guide.
+</Note> 

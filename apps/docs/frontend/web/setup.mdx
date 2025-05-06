@@ -1,0 +1,178 @@
+---
+title: 'Web App Setup'
+description: 'Setting up the web application'
+---
+
+# Web Application Setup
+
+This guide covers setting up the Tasks Application web frontend.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm
+- Git
+
+## Setup Steps
+
+### 1. Install Dependencies
+
+```bash
+# Navigate to web app directory
+cd apps/web
+
+# Install dependencies
+pnpm install
+```
+
+### 2. Environment Configuration
+
+Create `.env.local` in `apps/web`:
+
+```bash
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:9000
+NEXT_PUBLIC_WS_URL=ws://localhost:9000
+
+# Authentication
+NEXT_PUBLIC_AUTH_ENABLED=true
+NEXT_PUBLIC_AUTH_PROVIDER=local
+
+# Feature Flags
+NEXT_PUBLIC_ENABLE_NOTIFICATIONS=true
+NEXT_PUBLIC_ENABLE_ANALYTICS=false
+```
+
+### 3. Development Server
+
+```bash
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server
+pnpm start
+```
+
+## Project Structure
+
+```
+apps/web/
+├── src/
+│   ├── components/     # Reusable components
+│   ├── pages/         # Next.js pages
+│   ├── hooks/         # Custom React hooks
+│   ├── store/         # State management
+│   ├── styles/        # Global styles
+│   ├── types/         # TypeScript types
+│   └── utils/         # Utility functions
+├── public/            # Static assets
+└── tests/            # Test files
+```
+
+## Key Features
+
+### 1. Component Library
+
+```typescript
+// Example component usage
+import { Button, Card, Input } from '@/components';
+
+export default function TaskForm() {
+  return (
+    <Card>
+      <Input label="Task Title" />
+      <Button variant="primary">Create Task</Button>
+    </Card>
+  );
+}
+```
+
+### 2. State Management
+
+```typescript
+// Using Zustand store
+import { useTaskStore } from '@/store/tasks';
+
+export function TaskList() {
+  const tasks = useTaskStore(state => state.tasks);
+  const fetchTasks = useTaskStore(state => state.fetchTasks);
+  
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+  
+  return <TaskListComponent tasks={tasks} />;
+}
+```
+
+### 3. API Integration
+
+```typescript
+// API client setup
+import { api } from '@/utils/api';
+
+// Example API call
+const createTask = async (task: TaskInput) => {
+  const response = await api.post('/tasks', task);
+  return response.data;
+};
+```
+
+## Development Workflow
+
+1. Create feature branch
+2. Implement changes
+3. Write tests
+4. Run linter
+5. Create PR
+
+## Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run e2e tests
+pnpm test:e2e
+```
+
+## Building for Production
+
+```bash
+# Build the application
+pnpm build
+
+# Analyze bundle size
+pnpm analyze
+
+# Start production server
+pnpm start
+```
+
+## Performance Optimization
+
+1. Code splitting
+2. Image optimization
+3. Caching strategies
+4. Bundle analysis
+5. Lazy loading
+
+## Best Practices
+
+1. Follow component patterns
+2. Write unit tests
+3. Use TypeScript
+4. Implement error boundaries
+5. Follow accessibility guidelines
+6. Optimize performance
+7. Document components
+
+<Note>
+  For more details on components and state management, check the respective guides.
+</Note> 
